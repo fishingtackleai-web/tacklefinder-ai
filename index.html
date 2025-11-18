@@ -16,14 +16,14 @@
         input, select { width:100%; padding:14px; border:1px solid #ddd; border-radius:10px; font-size:1.1em; }
         button { margin-top:30px; width:100%; padding:18px; background:var(--s); color:white; border:none; border-radius:10px; font-size:1.3em; font-weight:bold; cursor:pointer; transition:0.3s; }
         button:hover { background:#218838; transform:scale(1.02); }
-        #out { display:none; margin-top:40px; opacity:0; transition:opacity 0.6s; }
-        #out.visible { opacity:1; }
+        #out { visibility:hidden; opacity:0; transition:opacity 0.6s; }
+        #out.visible { visibility:visible; opacity:1; }
         .tiers { display:grid; gap:24px; margin-top:30px; }
-        @media (min-width:1024px) { .tiers { grid-template-columns: 1fr 1fr 1fr; } }  /* ← FIX: Forces 3 side-by-side on desktop */
-        @media (min-width:640px and max-width:1023px) { .tiers { grid-template-columns: 1fr 1fr; } }  /* 2 on tablet */
-        @media (max-width:639px) { .tiers { grid-template-columns: 1fr; } }  /* 1 on mobile */
+        @media (min-width:1024px) { .tiers { grid-template-columns: 1fr 1fr 1fr; } }
+        @media (min-width:640px and max-width:1023px) { .tiers { grid-template-columns: 1fr 1fr; } }
+        @media (max-width:639px) { .tiers { grid-template-columns: 1fr; } }
         .tier { border:2px solid #ddd; border-radius:12px; padding:20px; background:#fafafa; }
-        .tier:empty { display:none !important; }  /* hides empty tiers */
+        .tier:empty { display:none !important; }
         .tier h3 { margin:-20px -20px 20px -20px; padding:12px; text-align:center; color:white; border-radius:10px 10px 0 0; font-size:1.4em; }
         .budget h3 { background:#27ae60; }
         .mid h3 { background:#2980b9; }
@@ -74,11 +74,9 @@
     </select>
     <button type="submit">Get My Tackle List →</button>
 </form>
+
 <div id="out">
-    <div class="load" id="load">
-        <p style="font-size:1.5em;">Asking the fish gods… 🎣</p>
-        <p style="margin-top:20px; color:#666;">This takes 10–20 seconds – worth the wait for perfect recommendations</p>
-    </div>
+    <div class="load" id="load">Asking the fish gods… 🎣</div>
     <div id="tiers-sec" style="display:none">
         <h2 style="text-align:center; margin-bottom:10px;">Your Personalized Tackle Recommendations</h2>
         <div class="tiers">
@@ -92,8 +90,10 @@
         <div id="tips"></div>
     </div>
 </div>
+
 <p class="disc">Disclosure: We may earn commission on purchases (keeps the site free).</p>
 </main>
+
 <script type="module">
     const f = document.getElementById('f');
     const out = document.getElementById('out');
@@ -121,7 +121,8 @@
 
         const speciesPart = species ? `Target species: ${species}\n` : '';
 
-        const prompt = `You are the #1 fishing tackle expert in 2025.
+        const prompt = `You are the #1 fishing tackle expert with the latest knowledge.
+
 ${speciesPart}Location: ${loc}
 Date/Season: ${date}
 Water: ${body}
@@ -130,25 +131,31 @@ Style: ${type}
 Return EXACTLY this format — no extra text:
 
 BUDGET:
-1. Rod → ...
-2. Reel → ...
-... (8 lines total, under $150 total where possible)
+1. Rod → [exact model, brief reason]
+2. Reel → [exact model, brief reason]
+3. Line → [exact model, brief reason]
+4. Leader → [exact model, brief reason]
+5. Lure/Bait 1 → [exact model/color, brief reason]
+6. Lure/Bait 2 → ...
+7. Lure/Bait 3 → ...
+8. Accessories → [exact model, brief reason]
+9. Clothing → [exact model, brief reason]
 
 MID-RANGE:
 1. Rod → ...
 2. Reel → ...
-... (8 lines, $200–450 total)
+... (9 lines, $200–450 total)
 
 PRO:
 1. Rod → ...
 2. Reel → ...
-... (8 lines, premium brands)
+... (9 lines, premium brands)
 
 TIPS:
-1. ...
+1. [tip title – detailed explanation]
 2. ...
 
-Vary brands across tiers. Only real 4.5+ star 2025 best-sellers widely available on Amazon and FishUSA.`;
+Vary brands across tiers. Only real 4.5+ star best-sellers widely available on Amazon. Include brief reasons for each item. Tailor to the specific location, season, water, style, and species.`;
 
         try {
             const r = await fetch('/api/recommend', {
@@ -163,7 +170,7 @@ Vary brands across tiers. Only real 4.5+ star 2025 best-sellers widely available
             const parseTier = (tierName, div) => {
                 const section = txt.split(tierName + ':')[1]?.split(/\n(?:BUDGET|MID-RANGE|PRO|TIPS):/)[0] || '';
                 section.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
-                    const clean = l.replace(/^\d+\.\s*/, '').split('→')[1]?.trim() || l;
+                    const clean = l.replace(/^\d+\.\s*/, '').split(' → ')[1]?.trim() || l;
                     const item = document.createElement('div'); item.className = 'item';
                     item.innerHTML = `<strong>${l.replace(/^\d+\.\s*/, '')}</strong><div class="links">
                         <a href="https://amazon.com/s?k=${encodeURIComponent(clean)}&tag=fishingtac0b6-20" target="_blank">Amazon</a>
