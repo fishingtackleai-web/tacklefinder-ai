@@ -74,7 +74,6 @@
     </select>
     <button type="submit">Get My Tackle List →</button>
 </form>
-
 <div id="out">
     <div class="load" id="load">Asking the fish gods… 🎣</div>
     <div id="tiers-sec" style="display:none">
@@ -90,10 +89,8 @@
         <div id="tips"></div>
     </div>
 </div>
-
 <p class="disc">Disclosure: We may earn commission on purchases (keeps the site free).</p>
 </main>
-
 <script type="module">
     const f = document.getElementById('f');
     const out = document.getElementById('out');
@@ -104,7 +101,6 @@
     const midDiv = document.getElementById('mid');
     const proDiv = document.getElementById('pro');
     const tipsDiv = document.getElementById('tips');
-
     f.addEventListener('submit', async e => {
         e.preventDefault();
         out.style.display = 'block';
@@ -112,24 +108,18 @@
         tiersSec.style.display = tipsSec.style.display = 'none';
         load.style.display = 'block';
         budgetDiv.innerHTML = midDiv.innerHTML = proDiv.innerHTML = tipsDiv.innerHTML = '';
-
         const loc = document.getElementById('loc').value.trim();
         const date = document.getElementById('date').value || 'current season';
         const species = document.getElementById('species').value.trim();
         const body = document.getElementById('body').value;
         const type = document.getElementById('type').value;
-
         const speciesPart = species ? `Target species: ${species}\n` : '';
-
         const prompt = `You are the #1 fishing tackle expert with the latest knowledge.
-
 ${speciesPart}Location: ${loc}
 Date/Season: ${date}
 Water: ${body}
 Style: ${type}
-
 Return EXACTLY this format — no extra text:
-
 BUDGET:
 1. Rod → [exact model, brief reason]
 2. Reel → [exact model, brief reason]
@@ -140,23 +130,18 @@ BUDGET:
 7. Lure/Bait 3 → ...
 8. Accessories → [exact model, brief reason]
 9. Clothing → [exact model, brief reason]
-
 MID-RANGE:
 1. Rod → ...
 2. Reel → ...
 ... (9 lines, $200–450 total)
-
 PRO:
 1. Rod → ...
 2. Reel → ...
 ... (9 lines, premium brands)
-
 TIPS:
 1. [tip title – detailed explanation]
 2. ...
-
-Vary brands across tiers. Only real 4.5+ star best-sellers widely available on Amazon. Include brief reasons for each item. Tailor to the specific location, season, water, style, and species.`;
-
+Vary brands across tiers. Only real 4.5+ star best-sellers widely available on Amazon. Include brief reasons for each item. Tailor to the specific location, season, water, style, and species. TIPS: fishing techniques, locations, and strategies only – no gear or tackle recommendations.`;
         try {
             const r = await fetch('/api/recommend', {
                 method: 'POST',
@@ -166,11 +151,10 @@ Vary brands across tiers. Only real 4.5+ star best-sellers widely available on A
             if (!r.ok) throw new Error();
             const d = await r.json();
             const txt = d.choices[0].message.content;
-
             const parseTier = (tierName, div) => {
                 const section = txt.split(tierName + ':')[1]?.split(/\n(?:BUDGET|MID-RANGE|PRO|TIPS):/)[0] || '';
                 section.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
-                    const clean = l.replace(/^\d+\.\s*/, '').split(' → ')[1]?.trim() || l;
+                    const clean = l.replace(/^\d+\.\s*/, '').split(' → ')[1]?.split(/, | - | – /)[0]?.trim() || l;  /* FIXED: model only for search */
                     const item = document.createElement('div'); item.className = 'item';
                     item.innerHTML = `<strong>${l.replace(/^\d+\.\s*/, '')}</strong><div class="links">
                         <a href="https://amazon.com/s?k=${encodeURIComponent(clean)}&tag=fishingtac0b6-20" target="_blank">Amazon</a>
@@ -179,18 +163,15 @@ Vary brands across tiers. Only real 4.5+ star best-sellers widely available on A
                     div.appendChild(item);
                 });
             };
-
             parseTier('BUDGET', budgetDiv);
             parseTier('MID-RANGE', midDiv);
             parseTier('PRO', proDiv);
-
             const tipsPart = txt.split('TIPS:')[1] || '';
             tipsPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
                 const item = document.createElement('div'); item.className = 'item';
                 item.innerHTML = l.trim();
                 tipsDiv.appendChild(item);
             });
-
             load.style.display = 'none';
             tiersSec.style.display = 'block';
             tipsSec.style.display = 'block';
