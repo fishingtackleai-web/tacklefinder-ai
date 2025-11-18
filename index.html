@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TackleFinder.ai - AI Fishing Gear + Tips</title>
-    <meta name="description" content="Instant AI-powered fishing gear recommendations for exactly where and when you're going.">
+    <title>FishingTackle.ai - AI Fishing Gear + Tips</title>
+    <meta name="description" content="Instant AI-powered tackle recommendations for exactly where, when, and what fish you're chasing.">
     <style>
         :root { --p: #0066cc; --s: #28a745; }
         body { font-family: system-ui, sans-serif; margin:0; background:#f8f9fa; color:#222; line-height:1.6; }
@@ -20,14 +20,16 @@
         .sec { margin-top:50px; }
         .item { background:#f8f9fa; padding:18px; margin:15px 0; border-radius:10px; border-left:6px solid var(--p); }
         .links { margin-top:12px; font-size:0.95em; }
-        .links a { margin-right:18px; color:var(--p); font-weight:600; }
+        .links a { margin-right:18px; color:var(--p); font-weight:600; text-decoration:none; }
+        .links a:hover { text-decoration:underline; }
         .disc { text-align:center; font-size:0.85em; color:#666; margin:50px 0; }
         .load { text-align:center; padding:50px; font-size:1.2em; }
+        .optional { color:#666; font-weight:normal; font-size:0.95em; }
     </style>
 </head>
 <body>
 <header>
-    <h1>TackleFinder.ai</h1>
+    <h1>FishingTackle.ai</h1>
     <p>Tell me where you're fishing → get exact gear + pro tips that are working right now</p>
 </header>
 <main>
@@ -38,17 +40,22 @@
     <label>Date (optional – improves seasonal accuracy)</label>
     <input type="date" id="date">
 
+    <label>Target Species <span class="optional">(optional – makes recommendations even better)</span></label>
+    <input type="text" id="species" placeholder="e.g. Redfish, Largemouth Bass, Striped Bass, Rainbow Trout, Snook">
+
     <label>Body of Water</label>
-    <select id="body" required><option value="">Choose...</option>
+    <select id="body" required>
+        <option value="">Choose...</option>
         <option>Saltwater / Ocean</option>
-        <option>Inshore / Bay / Flats</option>
+        <option>Inshore / Bay / Flats</ option>
         <option>Lake</option>
         <option>River / Stream</option>
         <option>Surf / Beach</option>
     </select>
 
     <label>Fishing Style</label>
-    <select id="type" required><option value="">Choose...</option>
+    <select id="type" required>
+        <option value="">Choose...</option>
         <option>Surf Casting</option>
         <option>Inshore / Flats</option>
         <option>Offshore / Deep Sea</option>
@@ -71,7 +78,7 @@
 <p class="disc">Disclosure: We may earn commission on purchases (keeps the site free).</p>
 </main>
 
-<script>
+<script type="module">
     const f = document.getElementById('f');
     const out = document.getElementById('out');
     const load = document.getElementById('load');
@@ -87,14 +94,17 @@
         load.style.display = 'block';
         gearDiv.innerHTML = tipsDiv.innerHTML = '';
 
-        const loc = document.getElementById('loc').value;
+        const loc = document.getElementById('loc').value.trim();
         const date = document.getElementById('date').value || 'current season';
+        const species = document.getElementById('species').value.trim();
         const body = document.getElementById('body').value;
         const type = document.getElementById('type').value;
 
+        const speciesPart = species ? `Target species: ${species}\n` : '';
+
         const prompt = `You are the #1 fishing tackle expert in 2025.
 
-Location: ${loc}
+${speciesPart}Location: ${loc}
 Date/Season: ${date}
 Water: ${body}
 Style: ${type}
@@ -102,17 +112,17 @@ Style: ${type}
 Respond EXACTLY this format (no extra text):
 
 GEAR:
-1. Rod → Exact real model name
+1. Rod → Exact real 2025 model name
 2. Reel → Exact real model
 3. Line → Exact brand + spec
 4. Leader → Exact product
-5. Lure/Bait 1 → Exact top-selling lure/bait + color if relevant
+5. Lure/Bait 1 → Exact top-selling lure/bait for ${species || 'these conditions'} right now
 6. Lure/Bait 2 → …
 7. Lure/Bait 3 → …
 8. Accessories → Exact pliers, net, clothing etc.
 
 TIPS:
-1. Tip title – full explanation
+1. Tip title – full explanation tailored to ${species || 'these conditions'}
 2. etc.
 
 Only recommend products that are 4.5+ stars and actual 2025 best-sellers on TackleDirect/Amazon/Bass Pro.`;
@@ -120,36 +130,48 @@ Only recommend products that are 4.5+ stars and actual 2025 best-sellers on Tack
         try {
             const r = await fetch('https://api.x.ai/v1/chat/completions', {
                 method: 'POST',
-                headers: {'Content-Type':'application/json', 'Authorization': 'Bearer ' + import.meta.env.VITE_XAI_API_KEY},
-                body: JSON.stringify({model:'grok-3', messages:[{role:'user', content:prompt}], max_tokens:1000, temperature:0.7})
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + import.meta.env.VITE_XAI_API_KEY
+                },
+                body: JSON.stringify({
+                    model: 'grok-3',           // change to 'grok-3-mini' anytime to save 70% cost
+                    messages: [{ role: 'user', content: prompt }],
+                    max_tokens: 1000,
+                    temperature: 0.7
+                })
             });
+
+            if (!r.ok) throw new Error('API error');
             const d = await r.json();
             const txt = d.choices[0].message.content;
 
-            // GEAR
+            // Parse GEAR
             const gearPart = txt.split('TIPS:')[0].split('GEAR:')[1] || '';
             gearPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
-                const clean = l.replace(/^\d+\.\s*/, '').split('→')[1] || l;
-                const div = document.createElement('div'); div.className='item';
+                const clean = l.replace(/^\d+\.\s*/, '').split('→')[1]?.trim() || l;
+                const div = document.createElement('div'); div.className = 'item';
                 div.innerHTML = `<strong>${l.replace(/^\d+\.\s*/, '')}</strong><div class="links">
                     <a href="https://www.tackledirect.com/search.html?keywords=${encodeURIComponent(clean)}" target="_blank">TackleDirect</a>
-                    <a href="https://amazon.com/s?k=${encodeURIComponent(clean)}&tag=YOURAMAZON" target="_blank">Amazon</a>
+                    <a href="https://amazon.com/s?k=${encodeURIComponent(clean)}&tag=YOUR_AMAZON_TAG" target="_blank">Amazon</a>
                     <a href="https://basspro.com/shop/en/search?searchTerm=${encodeURIComponent(clean)}" target="_blank">Bass Pro</a>
                 </div>`;
                 gearDiv.appendChild(div);
             });
 
-            // TIPS
+            // Parse TIPS
             const tipsPart = txt.split('TIPS:')[1] || '';
             tipsPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
-                const div = document.createElement('div'); div.className='item';
+                const div = document.createElement('div'); div.className = 'item';
                 div.innerHTML = l.trim();
                 tipsDiv.appendChild(div);
             });
 
-            load.style.display='none';
+            load.style.display = 'none';
             gearSec.style.display = tipsSec.style.display = 'block';
-        } catch { load.innerHTML = 'Error — check your xAI API key and try again.'; }
+        } catch (err) {
+            load.innerHTML = 'Error — check your API key or internet connection.';
+        }
     });
 </script>
 </body>
