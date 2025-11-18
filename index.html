@@ -14,20 +14,24 @@
         form, #out { background:white; border-radius:16px; padding:30px; box-shadow:0 12px 40px rgba(0,0,0,0.1); }
         label { display:block; margin:20px 0 8px; font-weight:700; font-size:1.1em; }
         input, select { width:100%; padding:14px; border:1px solid #ddd; border-radius:10px; font-size:1.1em; }
-        button { margin-top:30px; width:100%; padding:18px; background:var(--s); color:white; border:none; border-radius:10px; font-size:1.3em; font-weight:bold; cursor:pointer; }
-        button:hover { background:#218838; }
-        #out { display:none; margin-top:40px; }
-        .tiers { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-top:30px; }
-        .tier { border:2px solid #ddd; border-radius:12px; padding:20px; background:#fafafa; }
-        .tier h3 { margin-top:0; text-align:center; padding:10px; color:white; border-radius:8px; }
+        button { margin-top:30px; width:100%; padding:18px; background:var(--s); color:white; border:none; border-radius:10px; font-size:1.3em; font-weight:bold; cursor:pointer; transition:0.3s; }
+        button:hover { background:#218838; transform:scale(1.02); }
+        #out { display:none; margin-top:40px; opacity:0; transition:opacity 0.6s; }
+        #out.visible { opacity:1; }
+        .tiers { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:24px; margin-top:30px; }
+        .tier { border:2px solid #ddd; border-radius:12px; padding:20px; background:#fafafa; transition:0.3s; }
+        .tier:empty { display:none !important; }  /* ← THIS IS YOUR COSMETIC FIX */
+        .tier h3 { margin:-20px -20px 20px -20px; padding:12px; text-align:center; color:white; border-radius:10px 10px 0 0; font-size:1.4em; }
         .budget h3 { background:#27ae60; }
         .mid h3 { background:#2980b9; }
         .pro h3 { background:#8e44ad; }
-        .item { background:white; padding:15px; margin:12px 0; border-radius:8px; border-left:5px solid var(--p); box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-        .links { margin-top:10px; font-size:0.9em; }
-        .links a { margin-right:15px; color:var(--p); font-weight:600; }
-        .disc { text-align:center; font-size:0.85em; color:#666; margin:50px 0; }
-        .load { text-align:center; padding:50px; font-size:1.2em; }
+        .item { background:white; padding:16px; margin:14px 0; border-radius:10px; border-left:6px solid var(--p); box-shadow:0 3px 10px rgba(0,0,0,0.08); transition:0.2s; }
+        .item:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,0.12); }
+        .links { margin-top:12px; font-size:0.95em; }
+        .links a { margin-right:16px; color:var(--p); font-weight:600; text-decoration:none; }
+        .links a:hover { text-decoration:underline; }
+        .disc { text-align:center; font-size:0.85em; color:#666; margin:60px 0 20px; }
+        .load { text-align:center; padding:60px; font-size:1.3em; color:#555; }
         .optional { color:#666; font-weight:normal; font-size:0.95em; }
     </style>
 </head>
@@ -54,14 +58,17 @@
 <div id="out">
     <div class="load" id="load">Asking the fish gods… 🎣</div>
     <div id="tiers-sec" style="display:none">
-        <h2 style="text-align:center;">Your Personalized Tackle Recommendations</h2>
+        <h2 style="text-align:center; margin-bottom:10px;">Your Personalized Tackle Recommendations</h2>
         <div class="tiers">
             <div class="tier budget"><h3>Budget Picks</h3><div id="budget"></div></div>
             <div class="tier mid"><h3>Mid-Range</h3><div id="mid"></div></div>
             <div class="tier pro"><h3>Pro / Premium</h3><div id="pro"></div></div>
         </div>
     </div>
-    <div id="tips-sec" style="display:none;margin-top:50px;"><h2>Pro Tips & What’s Biting Right Now</h2><div id="tips"></div></div>
+    <div id="tips-sec" style="display:none; margin-top:60px;">
+        <h2 style="text-align:center;">Pro Tips & What’s Biting Right Now</h2>
+        <div id="tips"></div>
+    </div>
 </div>
 
 <p class="disc">Disclosure: We may earn commission on purchases (keeps the site free).</p>
@@ -72,6 +79,7 @@
     const out = document.getElementById('out');
     const load = document.getElementById('load');
     const tiersSec = document.getElementById('tiers-sec');
+    const tipsSec = document.getElementById('tips-sec');  // ← fixed undefined reference
     const budgetDiv = document.getElementById('budget');
     const midDiv = document.getElementById('mid');
     const proDiv = document.getElementById('pro');
@@ -80,6 +88,7 @@
     f.addEventListener('submit', async e => {
         e.preventDefault();
         out.style.display = 'block';
+        out.classList.remove('visible');
         tiersSec.style.display = tipsSec.style.display = 'none';
         load.style.display = 'block';
         budgetDiv.innerHTML = midDiv.innerHTML = proDiv.innerHTML = tipsDiv.innerHTML = '';
@@ -93,33 +102,22 @@
         const speciesPart = species ? `Target species: ${species}\n` : '';
 
         const prompt = `You are the #1 fishing tackle expert in 2025.
-
 ${speciesPart}Location: ${loc}
 Date/Season: ${date}
 Water: ${body}
 Style: ${type}
-
 Return EXACTLY this format — no extra text:
-
 BUDGET:
 1. Rod → Ugly Stik GX2 7' Medium
-2. Reel → ...
-... (8 lines total, under $150 total where possible)
-
+...
 MID-RANGE:
 1. Rod → St. Croix Premier 7' Medium
-2. Reel → ...
-... (8 lines, $200–450 total)
-
+...
 PRO:
 1. Rod → G. Loomis NRX+ 7' Medium-Heavy
-2. Reel → ...
-... (8 lines, premium brands)
-
+...
 TIPS:
 1. ...
-2. ...
-
 Vary brands across tiers. Only real 4.5+ star 2025 best-sellers.`;
 
         try {
@@ -149,7 +147,6 @@ Vary brands across tiers. Only real 4.5+ star 2025 best-sellers.`;
             parseTier('MID-RANGE', midDiv);
             parseTier('PRO', proDiv);
 
-            // Tips parsing
             const tipsPart = txt.split('TIPS:')[1] || '';
             tipsPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
                 const item = document.createElement('div'); item.className = 'item';
@@ -159,7 +156,8 @@ Vary brands across tiers. Only real 4.5+ star 2025 best-sellers.`;
 
             load.style.display = 'none';
             tiersSec.style.display = 'block';
-            document.getElementById('tips-sec').style.display = 'block';
+            tipsSec.style.display = 'block';
+            setTimeout(() => out.classList.add('visible'), 100);  // smooth fade-in
         } catch {
             load.innerHTML = 'Error — try again in a moment.';
         }
