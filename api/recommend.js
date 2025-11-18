@@ -1,8 +1,15 @@
 // api/recommend.js
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).end();
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   const { prompt } = req.body;
+
+  if (!process.env.XAI_API_KEY) {
+    console.error('Missing XAI_API_KEY');
+    return res.status(500).json({ error: 'Server misconfigured' });
+  }
 
   try {
     const response = await fetch('https://api.x.ai/v1/chat/completions', {
@@ -19,20 +26,20 @@ export default async function handler(req, res) {
       })
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const err = await response.text();
-      console.error('xAI error:', err);
-      return res.status(502).json({ error: 'Upstream API error' });
+      console.error('xAI API error:', data);
+      return res.status(502).json({ error: 'Upstream error' });
     }
 
-    const data = await response.json();
     res.status(200).json(data);
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error('Unexpected error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 }
 
 export const config = {
-  maxDuration: 90   // important — allows up to 90 s on Hobby plan
+  maxDuration: 90
 };
