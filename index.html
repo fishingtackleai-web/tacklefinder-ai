@@ -7,21 +7,25 @@
     <meta name="description" content="Instant AI-powered tackle recommendations for exactly where, when, and what fish you're chasing.">
     <style>
         :root { --p: #0066cc; --s: #28a745; }
-        body { font-family: system-ui, sans-serif; margin:0; background:#f8f9fa; color:#222; line-height:1.6; }
-        header { background: linear-gradient(135deg, #0066cc, #004d99); color:white; text-align:center; padding:50px 20px; }
+        body { font-family: system-ui, sans-serif; margin:0; background:#f0f8ff; color:#222; line-height:1.6; }
+        header { background: linear-gradient(135deg, #0066cc, #004d99); color:white; text-align:center; padding:60px 20px; }
         h1 { margin:0; font-size:2.8em; }
-        main { max-width:720px; margin:20px auto; padding:0 15px; }
+        main { max-width:900px; margin:20px auto; padding:0 15px; }
         form, #out { background:white; border-radius:16px; padding:30px; box-shadow:0 12px 40px rgba(0,0,0,0.1); }
         label { display:block; margin:20px 0 8px; font-weight:700; font-size:1.1em; }
         input, select { width:100%; padding:14px; border:1px solid #ddd; border-radius:10px; font-size:1.1em; }
         button { margin-top:30px; width:100%; padding:18px; background:var(--s); color:white; border:none; border-radius:10px; font-size:1.3em; font-weight:bold; cursor:pointer; }
         button:hover { background:#218838; }
         #out { display:none; margin-top:40px; }
-        .sec { margin-top:50px; }
-        .item { background:#f8f9fa; padding:18px; margin:15px 0; border-radius:10px; border-left:6px solid var(--p); }
-        .links { margin-top:12px; font-size:0.95em; }
-        .links a { margin-right:18px; color:var(--p); font-weight:600; text-decoration:none; }
-        .links a:hover { text-decoration:underline; }
+        .tiers { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:20px; margin-top:30px; }
+        .tier { border:2px solid #ddd; border-radius:12px; padding:20px; background:#fafafa; }
+        .tier h3 { margin-top:0; text-align:center; padding:10px; color:white; border-radius:8px; }
+        .budget h3 { background:#27ae60; }
+        .mid h3 { background:#2980b9; }
+        .pro h3 { background:#8e44ad; }
+        .item { background:white; padding:15px; margin:12px 0; border-radius:8px; border-left:5px solid var(--p); box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+        .links { margin-top:10px; font-size:0.9em; }
+        .links a { margin-right:15px; color:var(--p); font-weight:600; }
         .disc { text-align:center; font-size:0.85em; color:#666; margin:50px 0; }
         .load { text-align:center; padding:50px; font-size:1.2em; }
         .optional { color:#666; font-weight:normal; font-size:0.95em; }
@@ -36,43 +40,28 @@
 <form id="f">
     <label>Location (e.g. Destin FL, Lake Lanier, Cape Cod)</label>
     <input type="text" id="loc" required placeholder="City + state or specific spot">
-
     <label>Date (optional – improves seasonal accuracy)</label>
     <input type="date" id="date">
-
     <label>Target Species <span class="optional">(optional – makes recommendations even better)</span></label>
-    <input type="text" id="species" placeholder="e.g. Redfish, Largemouth Bass, Striped Bass, Rainbow Trout, Snook">
-
+    <input type="text" id="species" placeholder="e.g. Redfish, Largemouth Bass, Striped Bass">
     <label>Body of Water</label>
-    <select id="body" required>
-        <option value="">Choose...</option>
-        <option>Saltwater / Ocean</option>
-        <option>Inshore / Bay / Flats</ option>
-        <option>Lake</option>
-        <option>River / Stream</option>
-        <option>Surf / Beach</option>
-    </select>
-
+    <select id="body" required><option value="">Choose...</option><option>Saltwater / Ocean</option><option>Inshore / Bay / Flats</option><option>Lake</option><option>River / Stream</option><option>Surf / Beach</option></select>
     <label>Fishing Style</label>
-    <select id="type" required>
-        <option value="">Choose...</option>
-        <option>Surf Casting</option>
-        <option>Inshore / Flats</option>
-        <option>Offshore / Deep Sea</option>
-        <option>Bass Fishing</option>
-        <option>Trout / Stream</option>
-        <option>Fly Fishing</option>
-        <option>Ice Fishing</option>
-        <option>Kayak / Wade</option>
-    </select>
-
+    <select id="type" required><option value="">Choose...</option><option>Surf Casting</option><option>Inshore / Flats</option><option>Offshore / Deep Sea</option><option>Bass Fishing</option><option>Trout / Stream</option><option>Fly Fishing</option><option>Ice Fishing</option><option>Kayak / Wade</option></select>
     <button type="submit">Get My Tackle List →</button>
 </form>
 
 <div id="out">
     <div class="load" id="load">Asking the fish gods… 🎣</div>
-    <div id="gear-sec" class="sec" style="display:none"><h2>Recommended Gear (2025 top-sellers)</h2><div id="gear"></div></div>
-    <div id="tips-sec" class="sec" style="display:none"><h2>Pro Tips & What’s Biting Right Now</h2><div id="tips"></div></div>
+    <div id="tiers-sec" style="display:none">
+        <h2 style="text-align:center;">Your Personalized Tackle Recommendations</h2>
+        <div class="tiers">
+            <div class="tier budget"><h3>Budget Picks</h3><div id="budget"></div></div>
+            <div class="tier mid"><h3>Mid-Range</h3><div id="mid"></div></div>
+            <div class="tier pro"><h3>Pro / Premium</h3><div id="pro"></div></div>
+        </div>
+    </div>
+    <div id="tips-sec" style="display:none;margin-top:50px;"><h2>Pro Tips & What’s Biting Right Now</h2><div id="tips"></div></div>
 </div>
 
 <p class="disc">Disclosure: We may earn commission on purchases (keeps the site free).</p>
@@ -82,17 +71,18 @@
     const f = document.getElementById('f');
     const out = document.getElementById('out');
     const load = document.getElementById('load');
-    const gearSec = document.getElementById('gear-sec');
-    const gearDiv = document.getElementById('gear');
-    const tipsSec = document.getElementById('tips-sec');
+    const tiersSec = document.getElementById('tiers-sec');
+    const budgetDiv = document.getElementById('budget');
+    const midDiv = document.getElementById('mid');
+    const proDiv = document.getElementById('pro');
     const tipsDiv = document.getElementById('tips');
 
     f.addEventListener('submit', async e => {
         e.preventDefault();
         out.style.display = 'block';
-        gearSec.style.display = tipsSec.style.display = 'none';
+        tiersSec.style.display = tipsSec.style.display = 'none';
         load.style.display = 'block';
-        gearDiv.innerHTML = tipsDiv.innerHTML = '';
+        budgetDiv.innerHTML = midDiv.innerHTML = proDiv.innerHTML = tipsDiv.innerHTML = '';
 
         const loc = document.getElementById('loc').value.trim();
         const date = document.getElementById('date').value || 'current season';
@@ -109,61 +99,70 @@ Date/Season: ${date}
 Water: ${body}
 Style: ${type}
 
-Respond EXACTLY this format (no extra text):
+Return EXACTLY this format — no extra text:
 
-GEAR:
-1. Rod → Exact real 2025 model name
-2. Reel → Exact real model
-3. Line → Exact brand + spec
-4. Leader → Exact product
-5. Lure/Bait 1 → Exact top-selling lure/bait for ${species || 'these conditions'} right now
-6. Lure/Bait 2 → …
-7. Lure/Bait 3 → …
-8. Accessories → Exact pliers, net, clothing etc.
+BUDGET:
+1. Rod → Ugly Stik GX2 7' Medium
+2. Reel → ...
+... (8 lines total, under $150 total where possible)
+
+MID-RANGE:
+1. Rod → St. Croix Premier 7' Medium
+2. Reel → ...
+... (8 lines, $200–450 total)
+
+PRO:
+1. Rod → G. Loomis NRX+ 7' Medium-Heavy
+2. Reel → ...
+... (8 lines, premium brands)
 
 TIPS:
-1. Tip title – full explanation tailored to ${species || 'these conditions'}
-2. etc.
+1. ...
+2. ...
 
-Only recommend products that are 4.5+ stars and actual 2025 best-sellers on TackleDirect/Amazon/Bass Pro.`;
+Vary brands across tiers. Only real 4.5+ star 2025 best-sellers.`;
 
-     try {
-    const r = await fetch('/api/recommend', {  // Call your own serverless endpoint
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt })  // Send the prompt to your API route
-    });
+        try {
+            const r = await fetch('/api/recommend', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt })
+            });
+            if (!r.ok) throw new Error();
+            const d = await r.json();
+            const txt = d.choices[0].message.content;
 
-    if (!r.ok) throw new Error('API error');
-    const d = await r.json();
-    const txt = d.choices[0].message.content;
+            const parseTier = (tierName, div) => {
+                const section = txt.split(tierName + ':')[1]?.split(/\n(?:BUDGET|MID-RANGE|PRO|TIPS):/)[0] || '';
+                section.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
+                    const clean = l.replace(/^\d+\.\s*/, '').split('→')[1]?.trim() || l;
+                    const item = document.createElement('div'); item.className = 'item';
+                    item.innerHTML = `<strong>${l.replace(/^\d+\.\s*/, '')}</strong><div class="links">
+                        <a href="https://amazon.com/s?k=${encodeURIComponent(clean)}&tag=fishingtac0b6-20" target="_blank">Amazon</a>
+                        <a href="https://www.fishusa.com/search/?q=${encodeURIComponent(clean)}" target="_blank">FishUSA</a>
+                    </div>`;
+                    div.appendChild(item);
+                });
+            };
 
-    // Parse GEAR (same as before)
-    const gearPart = txt.split('TIPS:')[0].split('GEAR:')[1] || '';
-    gearPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
-        const clean = l.replace(/^\d+\.\s*/, '').split('→')[1]?.trim() || l;
-        const div = document.createElement('div'); div.className = 'item';
-        div.innerHTML = `<strong>${l.replace(/^\d+\.\s*/, '')}</strong><div class="links">
-           
-            <a href="https://amazon.com/s?k=${encodeURIComponent(clean)}&tag=fishingtac0b6-20" target="_blank">Amazon</a>
-            <a href="https://www.fishusa.com/search/?q=${encodeURIComponent(clean)}" target="_blank">FishUSA</a>
-        </div>`;
-        gearDiv.appendChild(div);
-    });
+            parseTier('BUDGET', budgetDiv);
+            parseTier('MID-RANGE', midDiv);
+            parseTier('PRO', proDiv);
 
-    // Parse TIPS (same as before)
-    const tipsPart = txt.split('TIPS:')[1] || '';
-    tipsPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
-        const div = document.createElement('div'); div.className = 'item';
-        div.innerHTML = l.trim();
-        tipsDiv.appendChild(div);
-    });
+            // Tips parsing
+            const tipsPart = txt.split('TIPS:')[1] || '';
+            tipsPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
+                const item = document.createElement('div'); item.className = 'item';
+                item.innerHTML = l.trim();
+                tipsDiv.appendChild(item);
+            });
 
-    load.style.display = 'none';
-    gearSec.style.display = tipsSec.style.display = 'block';
-} catch (err) {
-    load.innerHTML = 'Error — try again or check your setup.';
-}
+            load.style.display = 'none';
+            tiersSec.style.display = 'block';
+            document.getElementById('tips-sec').style.display = 'block';
+        } catch {
+            load.innerHTML = 'Error — try again in a moment.';
+        }
     });
 </script>
 </body>
