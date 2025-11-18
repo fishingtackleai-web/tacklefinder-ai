@@ -1,212 +1,156 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.7">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TackleFinder.ai - AI Fishing Gear + Tips</title>
+    <meta name="description" content="Instant AI-powered fishing gear recommendations for exactly where and when you're going.">
+    <style>
+        :root { --p: #0066cc; --s: #28a745; }
+        body { font-family: system-ui, sans-serif; margin:0; background:#f8f9fa; color:#222; line-height:1.6; }
+        header { background: linear-gradient(135deg, #0066cc, #004d99); color:white; text-align:center; padding:50px 20px; }
+        h1 { margin:0; font-size:2.8em; }
+        main { max-width:720px; margin:20px auto; padding:0 15px; }
+        form, #out { background:white; border-radius:16px; padding:30px; box-shadow:0 12px 40px rgba(0,0,0,0.1); }
+        label { display:block; margin:20px 0 8px; font-weight:700; font-size:1.1em; }
+        input, select { width:100%; padding:14px; border:1px solid #ddd; border-radius:10px; font-size:1.1em; }
+        button { margin-top:30px; width:100%; padding:18px; background:var(--s); color:white; border:none; border-radius:10px; font-size:1.3em; font-weight:bold; cursor:pointer; }
+        button:hover { background:#218838; }
+        #out { display:none; margin-top:40px; }
+        .sec { margin-top:50px; }
+        .item { background:#f8f9fa; padding:18px; margin:15px 0; border-radius:10px; border-left:6px solid var(--p); }
+        .links { margin-top:12px; font-size:0.95em; }
+        .links a { margin-right:18px; color:var(--p); font-weight:600; }
+        .disc { text-align:center; font-size:0.85em; color:#666; margin:50px 0; }
+        .load { text-align:center; padding:50px; font-size:1.2em; }
+    </style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;TackleFinder.ai - AI Fishing Gear Recommendations&lt;/title&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="description" content="Enter your location and trip details → get exact rods, reels, lures, and pro tips tailored to what's biting right now."&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>:root { --primary: #0066cc; --success: #28a745; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin:0; background:#f8f9fa; color:#222; line-height:1.6; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>header { background: linear-gradient(135deg, #0066cc, #004d99); color:white; text-align:center; padding:40px 20px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>h1 { margin:0; font-size:2.5em; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>main { max-width:700px; margin:20px auto; padding:0 15px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>form, #output { background:white; border-radius:12px; padding:25px; box-shadow:0 10px 30px rgba(0,0,0,0.1); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>label { display:block; margin:18px 0 8px; font-weight:600; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>input, select { width:100%; padding:12px; border:1px solid #ddd; border-radius:8px; font-size:1em; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>button { margin-top:25px; width:100%; padding:15px; background:var(--success); color:white; border:none; border-radius:8px; font-size:1.2em; font-weight:bold; cursor:pointer; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>button:hover { background:#218838; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>#output { display:none; margin-top:30px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.section { margin-top:40px; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.gear-item, .tip-item { background:#f8f9fa; padding:16px; margin:12px 0; border-radius:8px; border-left:5px solid var(--primary); }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.buy-links { margin-top:10px; font-size:0.9em; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.buy-links a { margin-right:15px; color:var(--primary); text-decoration:none; font-weight:600; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.disclosure { text-align:center; font-size:0.8em; color:#666; margin:40px 0; }</p>
-<p class="p1"><span class="Apple-converted-space">        </span>.loading { text-align:center; padding:40px; font-size:1.1em; }</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;header&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;h1&gt;TackleFinder.ai&lt;/h1&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p&gt;Get exact rods, reels, lures &amp; pro tips for where you're fishing — right now&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/header&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;main&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;form id="form"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;label&gt;Location (e.g. Miami Beach, FL or Lake Tahoe)&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="text" id="location" required placeholder="City, state or specific spot"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;label&gt;Date (optional — helps with seasonal patterns)&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="date" id="date"&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;label&gt;Body of Water&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;select id="body" required&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value=""&gt;Choose...&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="ocean/saltwater"&gt;Ocean / Saltwater&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="inshore/bay"&gt;Inshore / Bay&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="lake"&gt;Lake&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="river"&gt;River / Stream&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="surf/beach"&gt;Surf / Beach&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;label&gt;Type of Fishing&lt;/label&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;select id="type" required&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value=""&gt;Choose...&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="surf casting"&gt;Surf Casting&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="inshore flats"&gt;Inshore / Flats&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="deep sea/offshore"&gt;Deep Sea / Offshore&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="bass fishing"&gt;Bass (Freshwater)&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="trout/stream"&gt;Trout / Stream&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="fly fishing"&gt;Fly Fishing&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="ice fishing"&gt;Ice Fishing&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;option value="kayak"&gt;Kayak Fishing&lt;/option&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/select&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;button type="submit"&gt;Show Me What to Bring →&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/form&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="output"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="loading" id="loading"&gt;Talking to the fish gods... 🎣&lt;/div&gt;</p>
-<p class="p2"><span class="Apple-converted-space">            </span></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="gear-section" class="section" style="display:none"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2&gt;🎯 Recommended Gear (2025 Top-Rated)&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="gear-list"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="tips-section" class="section" style="display:none"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2&gt;🔥 Pro Tips &amp; What’s Biting Right Now&lt;/h2&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="tips-list"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;p class="disclosure"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>Disclosure: We earn commissions from qualifying purchases (helps keep the site free).</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/main&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const form = document.getElementById('form');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const output = document.getElementById('output');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const loading = document.getElementById('loading');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const gearSection = document.getElementById('gear-section');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const gearList = document.getElementById('gear-list');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const tipsSection = document.getElementById('tips-section');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const tipsList = document.getElementById('tips-list');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">        </span>form.addEventListener('submit', async (e) =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">            </span>e.preventDefault();</p>
-<p class="p1"><span class="Apple-converted-space">            </span>output.style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gearSection.style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>tipsSection.style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>loading.style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>gearList.innerHTML = '';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>tipsList.innerHTML = '';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const location = document.getElementById('location').value;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const date = document.getElementById('date').value || 'current season';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const body = document.getElementById('body').value;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>const type = document.getElementById('type').value;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>const prompt = `You are the world's best fishing tackle expert with perfect 2025 knowledge.</p>
-<p class="p2"><br></p>
-<p class="p1">Location: ${location}</p>
-<p class="p1">Date/Season: ${date}</p>
-<p class="p1">Water: ${body}</p>
-<p class="p1">Fishing style: ${type}</p>
-<p class="p2"><br></p>
-<p class="p1">Respond EXACTLY in this format — no extra text:</p>
-<p class="p2"><br></p>
-<p class="p1">GEAR:</p>
-<p class="p1">1. Rod → Penn Battalion II Inshore 7'0" Medium</p>
-<p class="p1">2. Reel → Shimano Stradic FL 3000</p>
-<p class="p1">3. Line → PowerPro Spectra 20lb</p>
-<p class="p1">4. Leader → Seaguar Blue Label 25lb fluorocarbon</p>
-<p class="p1">5. Lure/Bait 1 → Z-Man DieZel MinnowZ 4" (Opening Night) – killing it right now</p>
-<p class="p1">6. Lure/Bait 2 → MirrOlure MirrOdine 17MR (Chartreuse Silver)</p>
-<p class="p1">7. Lure/Bait 3 → DOA Shrimp 3" (Golden Shiner)</p>
-<p class="p1">8. Terminal/Other → Owner Mosquito Hooks #1 + Tsunami Pro Swivel Snaps</p>
-<p class="p2"><br></p>
-<p class="p1">TIPS:</p>
-<p class="p1">1. Target the outgoing tide at dawn – snook are stacked in the trough</p>
-<p class="p1">2. Use a slow twitch retrieve with the DOA shrimp</p>
-<p class="p1">3. etc.</p>
-<p class="p2"><br></p>
-<p class="p1">Only recommend REAL products that are currently 4.5+ stars and top sellers in 2025.`;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const res = await fetch('https://api.x.ai/v1/chat/completions', {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>method: 'POST',</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>headers: {</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>'Content-Type': 'application/json',</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>'Authorization': 'Bearer YOUR_XAI_API_KEY_HERE' <span class="Apple-converted-space">  </span>// ← Replace this once</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>},</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>body: JSON.stringify({</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>model: 'grok-3',</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>messages: [{ role: 'user', content: prompt }],</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>max_tokens: 900,</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>temperature: 0.7</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>})</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>if (!res.ok) throw new Error('API error');</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>const data = await res.json();</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const text = data.choices[0].message.content;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Robust parsing for GEAR (handles minor format variations)</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const gearMatch = text.match(/GEAR:\s*(.*?)TIPS:/s);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const gearText = gearMatch ? gearMatch[1].trim() : '';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const gearLines = gearText.split('\n').filter(l =&gt; l.trim() &amp;&amp; /^\d+\./.test(l.trim()));</p>
-<p class="p1"><span class="Apple-converted-space">                </span>gearLines.forEach(line =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const cleanLine = line.trim().replace(/^\d+\.\s*/, '');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const [category, details] = cleanLine.split(' → ');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const item = details ? details.trim() : cleanLine;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const div = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>div.className = 'gear-item';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>div.innerHTML = `&lt;strong&gt;${category ? category + ': ' : ''}${item}&lt;/strong&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="buy-links"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;a href="https://www.tackledirect.com/search.html?keywords=${encodeURIComponent(item)}&amp;affiliate=YOUR_TD_ID" target="_blank"&gt;TackleDirect&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;a href="https://www.amazon.com/s?k=${encodeURIComponent(item)}&amp;tag=YOUR_AMAZON_TAG" target="_blank"&gt;Amazon&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                            </span>&lt;a href="https://www.basspro.com/shop/en/search?searchTerm=${encodeURIComponent(item)}&amp;affiliate=YOUR_BPS_ID" target="_blank"&gt;Bass Pro&lt;/a&gt;</p>
-<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>gearList.appendChild(div);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>// Robust parsing for TIPS</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const tipsText = text.split('TIPS:')[1]?.trim() || '';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>const tipLines = tipsText.split('\n').filter(l =&gt; l.trim() &amp;&amp; /^\d+\./.test(l.trim()));</p>
-<p class="p1"><span class="Apple-converted-space">                </span>tipLines.forEach(line =&gt; {</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>const div = document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>div.className = 'tip-item';</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>div.innerHTML = line.trim();</p>
-<p class="p1"><span class="Apple-converted-space">                    </span>tipsList.appendChild(div);</p>
-<p class="p1"><span class="Apple-converted-space">                </span>});</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">                </span>loading.style.display = 'none';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>gearSection.style.display = gearLines.length ? 'block' : 'none';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>tipsSection.style.display = tipLines.length ? 'block' : 'none';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">            </span>} catch (err) {</p>
-<p class="p1"><span class="Apple-converted-space">                </span>loading.innerHTML = 'Error loading recommendations — check your API key or try again later.';</p>
-<p class="p1"><span class="Apple-converted-space">                </span>loading.style.display = 'block';</p>
-<p class="p1"><span class="Apple-converted-space">            </span>}</p>
-<p class="p1"><span class="Apple-converted-space">        </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+<header>
+    <h1>TackleFinder.ai</h1>
+    <p>Tell me where you're fishing → get exact gear + pro tips that are working right now</p>
+</header>
+<main>
+<form id="f">
+    <label>Location (e.g. Destin FL, Lake Lanier, Cape Cod)</label>
+    <input type="text" id="loc" required placeholder="City + state or specific spot">
+
+    <label>Date (optional – improves seasonal accuracy)</label>
+    <input type="date" id="date">
+
+    <label>Body of Water</label>
+    <select id="body" required><option value="">Choose...</option>
+        <option>Saltwater / Ocean</option>
+        <option>Inshore / Bay / Flats</option>
+        <option>Lake</option>
+        <option>River / Stream</option>
+        <option>Surf / Beach</option>
+    </select>
+
+    <label>Fishing Style</label>
+    <select id="type" required><option value="">Choose...</option>
+        <option>Surf Casting</option>
+        <option>Inshore / Flats</option>
+        <option>Offshore / Deep Sea</option>
+        <option>Bass Fishing</option>
+        <option>Trout / Stream</option>
+        <option>Fly Fishing</option>
+        <option>Ice Fishing</option>
+        <option>Kayak / Wade</option>
+    </select>
+
+    <button type="submit">Get My Tackle List →</button>
+</form>
+
+<div id="out">
+    <div class="load" id="load">Asking the fish gods… 🎣</div>
+    <div id="gear-sec" class="sec" style="display:none"><h2>Recommended Gear (2025 top-sellers)</h2><div id="gear"></div></div>
+    <div id="tips-sec" class="sec" style="display:none"><h2>Pro Tips & What’s Biting Right Now</h2><div id="tips"></div></div>
+</div>
+
+<p class="disc">Disclosure: We may earn commission on purchases (keeps the site free).</p>
+</main>
+
+<script>
+    const f = document.getElementById('f');
+    const out = document.getElementById('out');
+    const load = document.getElementById('load');
+    const gearSec = document.getElementById('gear-sec');
+    const gearDiv = document.getElementById('gear');
+    const tipsSec = document.getElementById('tips-sec');
+    const tipsDiv = document.getElementById('tips');
+
+    f.addEventListener('submit', async e => {
+        e.preventDefault();
+        out.style.display = 'block';
+        gearSec.style.display = tipsSec.style.display = 'none';
+        load.style.display = 'block';
+        gearDiv.innerHTML = tipsDiv.innerHTML = '';
+
+        const loc = document.getElementById('loc').value;
+        const date = document.getElementById('date').value || 'current season';
+        const body = document.getElementById('body').value;
+        const type = document.getElementById('type').value;
+
+        const prompt = `You are the #1 fishing tackle expert in 2025.
+
+Location: ${loc}
+Date/Season: ${date}
+Water: ${body}
+Style: ${type}
+
+Respond EXACTLY this format (no extra text):
+
+GEAR:
+1. Rod → Exact real model name
+2. Reel → Exact real model
+3. Line → Exact brand + spec
+4. Leader → Exact product
+5. Lure/Bait 1 → Exact top-selling lure/bait + color if relevant
+6. Lure/Bait 2 → …
+7. Lure/Bait 3 → …
+8. Accessories → Exact pliers, net, clothing etc.
+
+TIPS:
+1. Tip title – full explanation
+2. etc.
+
+Only recommend products that are 4.5+ stars and actual 2025 best-sellers on TackleDirect/Amazon/Bass Pro.`;
+
+        try {
+            const r = await fetch('https://api.x.ai/v1/chat/completions', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json', 'Authorization':'Bearer YOUR_XAI_API_KEY_HERE'},
+                body: JSON.stringify({model:'grok-3', messages:[{role:'user', content:prompt}], max_tokens:1000, temperature:0.7})
+            });
+            const d = await r.json();
+            const txt = d.choices[0].message.content;
+
+            // GEAR
+            const gearPart = txt.split('TIPS:')[0].split('GEAR:')[1] || '';
+            gearPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
+                const clean = l.replace(/^\d+\.\s*/, '').split('→')[1] || l;
+                const div = document.createElement('div'); div.className='item';
+                div.innerHTML = `<strong>${l.replace(/^\d+\.\s*/, '')}</strong><div class="links">
+                    <a href="https://www.tackledirect.com/search.html?keywords=${encodeURIComponent(clean)}" target="_blank">TackleDirect</a>
+                    <a href="https://amazon.com/s?k=${encodeURIComponent(clean)}&tag=YOURAMAZON" target="_blank">Amazon</a>
+                    <a href="https://basspro.com/shop/en/search?searchTerm=${encodeURIComponent(clean)}" target="_blank">Bass Pro</a>
+                </div>`;
+                gearDiv.appendChild(div);
+            });
+
+            // TIPS
+            const tipsPart = txt.split('TIPS:')[1] || '';
+            tipsPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
+                const div = document.createElement('div'); div.className='item';
+                div.innerHTML = l.trim();
+                tipsDiv.appendChild(div);
+            });
+
+            load.style.display='none';
+            gearSec.style.display = tipsSec.style.display = 'block';
+        } catch { load.innerHTML = 'Error — check your xAI API key and try again.'; }
+    });
+</script>
 </body>
 </html>
