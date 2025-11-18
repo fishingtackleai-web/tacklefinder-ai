@@ -10,7 +10,7 @@
         body { font-family: system-ui, sans-serif; margin:0; background:#f0f8ff; color:#222; line-height:1.6; }
         header { background: linear-gradient(135deg, #0066cc, #004d99); color:white; text-align:center; padding:60px 20px; }
         h1 { margin:0; font-size:2.8em; }
-        main { max-width:900px; margin:20px auto; padding:0 15px; }
+        main { max-width:1200px; margin:20px auto; padding:0 15px; } /* widened for 3 columns */
         form, #out { background:white; border-radius:16px; padding:30px; box-shadow:0 12px 40px rgba(0,0,0,0.1); }
         label { display:block; margin:20px 0 8px; font-weight:700; font-size:1.1em; }
         input, select { width:100%; padding:14px; border:1px solid #ddd; border-radius:10px; font-size:1.1em; }
@@ -18,9 +18,23 @@
         button:hover { background:#218838; transform:scale(1.02); }
         #out { display:none; margin-top:40px; opacity:0; transition:opacity 0.6s; }
         #out.visible { opacity:1; }
-        .tiers { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:24px; margin-top:30px; }
-        .tier { border:2px solid #ddd; border-radius:12px; padding:20px; background:#fafafa; transition:0.3s; }
-        .tier:empty { display:none !important; }  /* ← THIS IS YOUR COSMETIC FIX */
+
+        /* THREE COLUMNS SIDE-BY-SIDE FIX */
+        .tiers {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);   /* forces exactly 3 columns */
+            gap: 24px;
+            margin-top: 30px;
+        }
+        @media (max-width: 1024px) {
+            .tiers { grid-template-columns: 1fr 1fr; }   /* 2 columns on tablets */
+        }
+        @media (max-width: 640px) {
+            .tiers { grid-template-columns: 1fr; }       /* 1 column on phones */
+        }
+
+        .tier { border:2px solid #ddd; border-radius:12px; padding:20px; background:#fafafa; }
+        .tier:empty { display:none !important; }         /* hides empty tiers */
         .tier h3 { margin:-20px -20px 20px -20px; padding:12px; text-align:center; color:white; border-radius:10px 10px 0 0; font-size:1.4em; }
         .budget h3 { background:#27ae60; }
         .mid h3 { background:#2980b9; }
@@ -36,6 +50,7 @@
     </style>
 </head>
 <body>
+<!-- (same header and form as your last version – unchanged) -->
 <header>
     <h1>FishingTackle.ai</h1>
     <p>Tell me where you're fishing → get exact gear + pro tips that are working right now</p>
@@ -79,7 +94,7 @@
     const out = document.getElementById('out');
     const load = document.getElementById('load');
     const tiersSec = document.getElementById('tiers-sec');
-    const tipsSec = document.getElementById('tips-sec');  // ← fixed undefined reference
+    const tipsSec = document.getElementById('tips-sec');
     const budgetDiv = document.getElementById('budget');
     const midDiv = document.getElementById('mid');
     const proDiv = document.getElementById('pro');
@@ -106,19 +121,29 @@ ${speciesPart}Location: ${loc}
 Date/Season: ${date}
 Water: ${body}
 Style: ${type}
+
 Return EXACTLY this format — no extra text:
+
 BUDGET:
 1. Rod → Ugly Stik GX2 7' Medium
-...
+2. Reel → ...
+... (8 lines total, under $150 total where possible)
+
 MID-RANGE:
 1. Rod → St. Croix Premier 7' Medium
-...
+2. Reel → ...
+... (8 lines, $200–450 total)
+
 PRO:
 1. Rod → G. Loomis NRX+ 7' Medium-Heavy
-...
+2. Reel → ...
+... (8 lines, premium brands)
+
 TIPS:
 1. ...
-Vary brands across tiers. Only real 4.5+ star 2025 best-sellers.`;
+2. ...
+
+Vary brands across tiers. Only real 4.5+ star 2025 best-sellers widely available on Amazon and FishUSA.`;
 
         try {
             const r = await fetch('/api/recommend', {
@@ -157,7 +182,7 @@ Vary brands across tiers. Only real 4.5+ star 2025 best-sellers.`;
             load.style.display = 'none';
             tiersSec.style.display = 'block';
             tipsSec.style.display = 'block';
-            setTimeout(() => out.classList.add('visible'), 100);  // smooth fade-in
+            setTimeout(() => out.classList.add('visible'), 100);
         } catch {
             load.innerHTML = 'Error — try again in a moment.';
         }
