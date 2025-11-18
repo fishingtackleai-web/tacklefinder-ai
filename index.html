@@ -127,51 +127,43 @@ TIPS:
 
 Only recommend products that are 4.5+ stars and actual 2025 best-sellers on TackleDirect/Amazon/Bass Pro.`;
 
-        try {
-            const r = await fetch('https://api.x.ai/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + import.meta.env.VITE_XAI_TOKEN
-                },
-                body: JSON.stringify({
-                    model: 'grok-3',           // change to 'grok-3-mini' anytime to save 70% cost
-                    messages: [{ role: 'user', content: prompt }],
-                    max_tokens: 1000,
-                    temperature: 0.7
-                })
-            });
+     try {
+    const r = await fetch('/api/recommend', {  // Call your own serverless endpoint
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt })  // Send the prompt to your API route
+    });
 
-            if (!r.ok) throw new Error('API error');
-            const d = await r.json();
-            const txt = d.choices[0].message.content;
+    if (!r.ok) throw new Error('API error');
+    const d = await r.json();
+    const txt = d.choices[0].message.content;
 
-            // Parse GEAR
-            const gearPart = txt.split('TIPS:')[0].split('GEAR:')[1] || '';
-            gearPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
-                const clean = l.replace(/^\d+\.\s*/, '').split('→')[1]?.trim() || l;
-                const div = document.createElement('div'); div.className = 'item';
-                div.innerHTML = `<strong>${l.replace(/^\d+\.\s*/, '')}</strong><div class="links">
-                    <a href="https://www.tackledirect.com/search.html?keywords=${encodeURIComponent(clean)}" target="_blank">TackleDirect</a>
-                    <a href="https://amazon.com/s?k=${encodeURIComponent(clean)}&tag=YOUR_AMAZON_TAG" target="_blank">Amazon</a>
-                    <a href="https://basspro.com/shop/en/search?searchTerm=${encodeURIComponent(clean)}" target="_blank">Bass Pro</a>
-                </div>`;
-                gearDiv.appendChild(div);
-            });
+    // Parse GEAR (same as before)
+    const gearPart = txt.split('TIPS:')[0].split('GEAR:')[1] || '';
+    gearPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
+        const clean = l.replace(/^\d+\.\s*/, '').split('→')[1]?.trim() || l;
+        const div = document.createElement('div'); div.className = 'item';
+        div.innerHTML = `<strong>${l.replace(/^\d+\.\s*/, '')}</strong><div class="links">
+            <a href="https://www.tackledirect.com/search.html?keywords=${encodeURIComponent(clean)}" target="_blank">TackleDirect</a>
+            <a href="https://amazon.com/s?k=${encodeURIComponent(clean)}&tag=YOUR_AMAZON_TAG" target="_blank">Amazon</a>
+            <a href="https://basspro.com/shop/en/search?searchTerm=${encodeURIComponent(clean)}" target="_blank">Bass Pro</a>
+        </div>`;
+        gearDiv.appendChild(div);
+    });
 
-            // Parse TIPS
-            const tipsPart = txt.split('TIPS:')[1] || '';
-            tipsPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
-                const div = document.createElement('div'); div.className = 'item';
-                div.innerHTML = l.trim();
-                tipsDiv.appendChild(div);
-            });
+    // Parse TIPS (same as before)
+    const tipsPart = txt.split('TIPS:')[1] || '';
+    tipsPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
+        const div = document.createElement('div'); div.className = 'item';
+        div.innerHTML = l.trim();
+        tipsDiv.appendChild(div);
+    });
 
-            load.style.display = 'none';
-            gearSec.style.display = tipsSec.style.display = 'block';
-        } catch (err) {
-            load.innerHTML = 'Error — check your API key or internet connection.';
-        }
+    load.style.display = 'none';
+    gearSec.style.display = tipsSec.style.display = 'block';
+} catch (err) {
+    load.innerHTML = 'Error — try again or check your setup.';
+}
     });
 </script>
 </body>
