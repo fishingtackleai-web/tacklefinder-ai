@@ -10,7 +10,7 @@
         body { font-family: system-ui, sans-serif; margin:0; background:#f0f8ff; color:#222; line-height:1.6; }
         header { background: linear-gradient(135deg, #0066cc, #004d99); color:white; text-align:center; padding:60px 20px; }
         h1 { margin:0; font-size:2.8em; }
-        main { max-width:1200px; margin:20px auto; padding:0 15px; } /* widened for 3 columns */
+        main { max-width:1200px; margin:20px auto; padding:0 15px; }
         form, #out { background:white; border-radius:16px; padding:30px; box-shadow:0 12px 40px rgba(0,0,0,0.1); }
         label { display:block; margin:20px 0 8px; font-weight:700; font-size:1.1em; }
         input, select { width:100%; padding:14px; border:1px solid #ddd; border-radius:10px; font-size:1.1em; }
@@ -18,23 +18,12 @@
         button:hover { background:#218838; transform:scale(1.02); }
         #out { display:none; margin-top:40px; opacity:0; transition:opacity 0.6s; }
         #out.visible { opacity:1; }
-
-        /* THREE COLUMNS SIDE-BY-SIDE FIX */
-        .tiers {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);   /* forces exactly 3 columns */
-            gap: 24px;
-            margin-top: 30px;
-        }
-        @media (max-width: 1024px) {
-            .tiers { grid-template-columns: 1fr 1fr; }   /* 2 columns on tablets */
-        }
-        @media (max-width: 640px) {
-            .tiers { grid-template-columns: 1fr; }       /* 1 column on phones */
-        }
-
+        .tiers { display:grid; gap:24px; margin-top:30px; }
+        @media (min-width:1024px) { .tiers { grid-template-columns: 1fr 1fr 1fr; } }  /* ← FIX: Forces 3 side-by-side on desktop */
+        @media (min-width:640px and max-width:1023px) { .tiers { grid-template-columns: 1fr 1fr; } }  /* 2 on tablet */
+        @media (max-width:639px) { .tiers { grid-template-columns: 1fr; } }  /* 1 on mobile */
         .tier { border:2px solid #ddd; border-radius:12px; padding:20px; background:#fafafa; }
-        .tier:empty { display:none !important; }         /* hides empty tiers */
+        .tier:empty { display:none !important; }  /* hides empty tiers */
         .tier h3 { margin:-20px -20px 20px -20px; padding:12px; text-align:center; color:white; border-radius:10px 10px 0 0; font-size:1.4em; }
         .budget h3 { background:#27ae60; }
         .mid h3 { background:#2980b9; }
@@ -50,7 +39,6 @@
     </style>
 </head>
 <body>
-<!-- (same header and form as your last version – unchanged) -->
 <header>
     <h1>FishingTackle.ai</h1>
     <p>Tell me where you're fishing → get exact gear + pro tips that are working right now</p>
@@ -62,14 +50,30 @@
     <label>Date (optional – improves seasonal accuracy)</label>
     <input type="date" id="date">
     <label>Target Species <span class="optional">(optional – makes recommendations even better)</span></label>
-    <input type="text" id="species" placeholder="e.g. Redfish, Largemouth Bass, Striped Bass">
+    <input type="text" id="species" placeholder="e.g. Redfish, Largemouth Bass, Striped Bass, Rainbow Trout, Snook">
     <label>Body of Water</label>
-    <select id="body" required><option value="">Choose...</option><option>Saltwater / Ocean</option><option>Inshore / Bay / Flats</option><option>Lake</option><option>River / Stream</option><option>Surf / Beach</option></select>
+    <select id="body" required>
+        <option value="">Choose...</option>
+        <option>Saltwater / Ocean</option>
+        <option>Inshore / Bay / Flats</option>
+        <option>Lake</option>
+        <option>River / Stream</option>
+        <option>Surf / Beach</option>
+    </select>
     <label>Fishing Style</label>
-    <select id="type" required><option value="">Choose...</option><option>Surf Casting</option><option>Inshore / Flats</option><option>Offshore / Deep Sea</option><option>Bass Fishing</option><option>Trout / Stream</option><option>Fly Fishing</option><option>Ice Fishing</option><option>Kayak / Wade</option></select>
+    <select id="type" required>
+        <option value="">Choose...</option>
+        <option>Surf Casting</option>
+        <option>Inshore / Flats</option>
+        <option>Offshore / Deep Sea</option>
+        <option>Bass Fishing</option>
+        <option>Trout / Stream</option>
+        <option>Fly Fishing</option>
+        <option>Ice Fishing</option>
+        <option>Kayak / Wade</option>
+    </select>
     <button type="submit">Get My Tackle List →</button>
 </form>
-
 <div id="out">
     <div class="load" id="load">Asking the fish gods… 🎣</div>
     <div id="tiers-sec" style="display:none">
@@ -85,10 +89,8 @@
         <div id="tips"></div>
     </div>
 </div>
-
 <p class="disc">Disclosure: We may earn commission on purchases (keeps the site free).</p>
 </main>
-
 <script type="module">
     const f = document.getElementById('f');
     const out = document.getElementById('out');
