@@ -16,12 +16,17 @@
         input, select { width:100%; padding:14px; border:1px solid #ddd; border-radius:10px; font-size:1.1em; }
         button { margin-top:30px; width:100%; padding:18px; background:var(--s); color:white; border:none; border-radius:10px; font-size:1.3em; font-weight:bold; cursor:pointer; transition:0.3s; }
         button:hover { background:#218838; transform:scale(1.02); }
-        #out { visibility:hidden; opacity:0; transition:opacity 0.6s; }
-        #out.visible { visibility:visible; opacity:1; }
+        button:disabled { background:#999; cursor:not-allowed; transform:none; }
+
+        /* Loading always visible */
+        #out { display:none; margin-top:40px; }
+        .loading-visible { display:block !important; }
+
         .tiers { display:grid; gap:24px; margin-top:30px; }
         @media (min-width:1024px) { .tiers { grid-template-columns: 1fr 1fr 1fr; } }
         @media (min-width:640px and max-width:1023px) { .tiers { grid-template-columns: 1fr 1fr; } }
         @media (max-width:639px) { .tiers { grid-template-columns: 1fr; } }
+
         .tier { border:2px solid #ddd; border-radius:12px; padding:20px; background:#fafafa; }
         .tier:empty { display:none !important; }
         .tier h3 { margin:-20px -20px 20px -20px; padding:12px; text-align:center; color:white; border-radius:10px 10px 0 0; font-size:1.4em; }
@@ -31,10 +36,12 @@
         .item { background:white; padding:16px; margin:14px 0; border-radius:10px; border-left:6px solid var(--p); box-shadow:0 3px 10px rgba(0,0,0,0.08); transition:0.2s; }
         .item:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(0,0,0,0.12); }
         .links { margin-top:12px; font-size:0.95em; }
-        .links a { margin-right:16px; color:var(--p); font-weight:600; text-decoration:none; }
+        .links a { color:var(--p); font-weight:600; text-decoration:none; }
         .links a:hover { text-decoration:underline; }
         .disc { text-align:center; font-size:0.85em; color:#666; margin:60px 0 20px; }
-        .load { text-align:center; padding:60px; font-size:1.3em; color:#555; }
+        .load { text-align:center; padding:80px 20px; }
+        .spinner { border:10px solid #f3f3f3; border-top:10px solid var(--s); border-radius:50%; width:70px; height:70px; animation:spin 1s linear infinite; margin:0 auto 20px; }
+        @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
         .optional { color:#666; font-weight:normal; font-size:0.95em; }
     </style>
 </head>
@@ -72,10 +79,15 @@
         <option>Ice Fishing</option>
         <option>Kayak / Wade</option>
     </select>
-    <button type="submit">Get My Tackle List →</button>
+    <button type="submit" id="submitBtn">Get My Tackle List →</button>
 </form>
+
 <div id="out">
-    <div class="load" id="load">Asking the fish gods… 🎣</div>
+    <div class="load" id="load">
+        <div class="spinner"></div>
+        <p style="font-size:1.6em; margin:10px 0;">Asking the fish gods… 🎣</p>
+        <p style="color:#666;">This takes 10–20 seconds – worth the wait for perfect recommendations!</p>
+    </div>
     <div id="tiers-sec" style="display:none">
         <h2 style="text-align:center; margin-bottom:10px;">Your Personalized Tackle Recommendations</h2>
         <div class="tiers">
@@ -89,59 +101,77 @@
         <div id="tips"></div>
     </div>
 </div>
+
 <p class="disc">Disclosure: We may earn commission on purchases (keeps the site free).</p>
 </main>
+
 <script type="module">
     const f = document.getElementById('f');
     const out = document.getElementById('out');
     const load = document.getElementById('load');
+    const submitBtn = document.getElementById('submitBtn');
     const tiersSec = document.getElementById('tiers-sec');
     const tipsSec = document.getElementById('tips-sec');
     const budgetDiv = document.getElementById('budget');
     const midDiv = document.getElementById('mid');
     const proDiv = document.getElementById('pro');
     const tipsDiv = document.getElementById('tips');
+
     f.addEventListener('submit', async e => {
         e.preventDefault();
+
+        // Show loading + disable button immediately
         out.style.display = 'block';
-        out.classList.remove('visible');
-        tiersSec.style.display = tipsSec.style.display = 'none';
         load.style.display = 'block';
+        tiersSec.style.display = tipsSec.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Working…';
+
         budgetDiv.innerHTML = midDiv.innerHTML = proDiv.innerHTML = tipsDiv.innerHTML = '';
+
         const loc = document.getElementById('loc').value.trim();
         const date = document.getElementById('date').value || 'current season';
         const species = document.getElementById('species').value.trim();
         const body = document.getElementById('body').value;
         const type = document.getElementById('type').value;
+
         const speciesPart = species ? `Target species: ${species}\n` : '';
+
         const prompt = `You are the #1 fishing tackle expert with the latest knowledge.
+
 ${speciesPart}Location: ${loc}
 Date/Season: ${date}
 Water: ${body}
 Style: ${type}
-Return EXACTLY this format — no extra text:
+
+Return EXACTLY this format — no extra text, no reasons:
+
 BUDGET:
-1. Rod → [exact model, brief reason]
-2. Reel → [exact model, brief reason]
-3. Line → [exact model, brief reason]
-4. Leader → [exact model, brief reason]
-5. Lure/Bait 1 → [exact model/color, brief reason]
+1. Rod → Ugly Stik GX2 7' Medium
+2. Reel → ...
+3. Line → ...
+4. Leader → ...
+5. Lure/Bait 1 → ...
 6. Lure/Bait 2 → ...
 7. Lure/Bait 3 → ...
-8. Accessories → [exact model, brief reason]
-9. Clothing → [exact model, brief reason]
+8. Accessories → ...
+9. Clothing → ...
+
 MID-RANGE:
 1. Rod → ...
-2. Reel → ...
-... (9 lines, $200–450 total)
+... (9 lines total)
+
 PRO:
 1. Rod → ...
-2. Reel → ...
-... (9 lines, premium brands)
+... (9 lines total)
+
 TIPS:
-1. [tip title – detailed explanation]
+1. ...
 2. ...
-Vary brands across tiers. Only real 4.5+ star best-sellers widely available on Amazon. Include brief reasons for each item. Tailor to the specific location, season, water, style, and species. TIPS: fishing techniques, locations, and strategies only – no gear or tackle recommendations.`;
+(4–6 tips only – techniques, spots, timing – NO gear mentions)
+
+Vary brands. Only real 4.5+ star best-sellers widely available on Amazon.`;
+
         try {
             const r = await fetch('/api/recommend', {
                 method: 'POST',
@@ -151,33 +181,38 @@ Vary brands across tiers. Only real 4.5+ star best-sellers widely available on A
             if (!r.ok) throw new Error();
             const d = await r.json();
             const txt = d.choices[0].message.content;
+
             const parseTier = (tierName, div) => {
                 const section = txt.split(tierName + ':')[1]?.split(/\n(?:BUDGET|MID-RANGE|PRO|TIPS):/)[0] || '';
                 section.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
-                    const clean = l.replace(/^\d+\.\s*/, '').split(' → ')[1]?.split(/, | - | – /)[0]?.trim() || l;  /* FIXED: model only for search */
+                    const model = l.split('→')[1]?.trim() || l;
                     const item = document.createElement('div'); item.className = 'item';
                     item.innerHTML = `<strong>${l.replace(/^\d+\.\s*/, '')}</strong><div class="links">
-                        <a href="https://amazon.com/s?k=${encodeURIComponent(clean)}&tag=fishingtac0b6-20" target="_blank">Amazon</a>
-                        <a href="https://www.fishusa.com/search/?q=${encodeURIComponent(clean)}" target="_blank">FishUSA</a>
+                        <a href="https://amazon.com/s?k=${encodeURIComponent(model)}&tag=fishingtac0b6-20" target="_blank">Buy on Amazon →</a>
                     </div>`;
                     div.appendChild(item);
                 });
             };
+
             parseTier('BUDGET', budgetDiv);
             parseTier('MID-RANGE', midDiv);
             parseTier('PRO', proDiv);
+
             const tipsPart = txt.split('TIPS:')[1] || '';
             tipsPart.trim().split('\n').filter(l => l.match(/^\d+/)).forEach(l => {
                 const item = document.createElement('div'); item.className = 'item';
                 item.innerHTML = l.trim();
                 tipsDiv.appendChild(item);
             });
+
             load.style.display = 'none';
             tiersSec.style.display = 'block';
             tipsSec.style.display = 'block';
-            setTimeout(() => out.classList.add('visible'), 100);
         } catch {
-            load.innerHTML = 'Error — try again in a moment.';
+            load.innerHTML = '<p style="color:#e74c3c; font-size:1.5em;">Error — please try again.</p>';
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Get My Tackle List →';
         }
     });
 </script>
