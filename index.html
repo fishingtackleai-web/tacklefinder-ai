@@ -224,7 +224,7 @@
         const type = typeSelect.value;
         const speciesPart = species ? `Target species: ${species}\n` : '';
         // Improved prompt: More detailed for better AI output, emphasize profitability (high-conversion products)
-        const prompt = `You are the #1 fishing tackle expert with up-to-date knowledge on best-sellers. Base all recommendations on real, proven fishing practices and knowledge. Do not hallucinate or invent gear combinations that don't make sense. Consider the typical weather for the location and date/season when recommending clothing (e.g., warm layers, waterproof gear for cold or rainy conditions; avoid shorts in winter). Match lures and baits precisely to the fishing technique, water type, and species (e.g., for trolling, use deep-diving plugs, crankbaits, or umbrella rigs, not topwater lures; for striped bass in cold months, focus on deeper presentations).
+        const prompt = `You are the #1 professional angler and tackle expert with up-to-date knowledge on best-sellers. Base all recommendations on real, proven fishing practices and knowledge. Do not hallucinate or invent gear combinations that don't make sense. Consider the specific weather forecast for the location and date/season when recommending clothing (e.g., warm layers, waterproof gear for cold or rainy conditions; avoid shorts in winter). Match lures and baits precisely to the fishing technique, water type, and species (e.g., for trolling, use deep-diving plugs, crankbaits, or umbrella rigs, not topwater lures; for striped bass in cold months, focus on deeper presentations).
 ${speciesPart}Location: ${loc}
 Date/Season: ${date}
 Water: ${body}
