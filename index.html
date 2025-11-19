@@ -1,3 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FishingTackle.ai - AI Fishing Gear + Tips</title>
+    <meta name="description" content="Instant AI-powered tackle recommendations with exact Amazon links, prices & photos.">
+    <style>
+        :root { --p: #0066cc; --s: #28a745; }
+        body { font-family: system-ui, sans-serif; margin:0; background:#f0f8ff; color:#222; line-height:1.6; }
+        header { background: linear-gradient(135deg, #0066cc, #004d99); color:white; text-align:center; padding:60px 20px; }
+        h1 { margin:0; font-size:2.8em; }
+        main { max-width:1200px; margin:20px auto; padding:0 15px; }
+        form, #out { background:white; border-radius:16px; padding:30px; box-shadow:0 12px 40px rgba(0,0,0,0.1); }
+        label { display:block; margin:20px 0 8px; font-weight:700; font-size:1.1em; }
+        input, select { width:100%; padding:14px; border:1px solid #ddd; border-radius:10px; font-size:1.1em; }
+        button { margin-top:30px; width:100%; padding:18px; background:var(--s); color:white; border:none; border-radius:10px; font-size:1.3em; font-weight:bold; cursor:pointer; }
+        button:hover { background:#218838; }
+        button:disabled { background:#999; cursor:not-allowed; }
+        #out { display:none; margin-top:40px; }
+        .tiers { display:grid; gap:24px; margin-top:30px; }
+        @media (min-width:1024px) { .tiers { grid-template-columns:1fr 1fr 1fr; } }
+        @media (min-width:640px and max-width:1023px) { .tiers { grid-template-columns:1fr 1fr; } }
+        .tier { border:2px solid #ddd; border-radius:12px; padding:20px; background:#fafafa; }
+        .tier h3 { margin:-20px -20px 20px -20px; padding:12px; text-align:center; color:white; border-radius:10px 10px 0 0; font-size:1.4em; }
+        .budget h3 { background:#27ae60; }
+        .mid h3 { background:#2980b9; }
+        .pro h3 { background:#8e44ad; }
+        .product-card { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin:16px 0; display:flex; align-items:center; transition:0.3s; }
+        .product-card:hover { transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.15); }
+        .product-card img { width:120px; height:120px; object-fit:contain; background:#f8f8f8; padding:10px; }
+        .product-info { padding:16px; flex:1; }
+        .product-title { font-weight:600; font-size:1.1em; margin-bottom:8px; }
+        .price { font-size:1.4em; font-weight:bold; color:#B12704; }
+        .prime { color:#007185; font-size:0.9em; margin-left:8px; }
+        .rating { color:#ffa41c; }
+        .buy-btn { display:inline-block; background:#ff9500; color:white; padding:10px 20px; border-radius:8px; text-decoration:none; font-weight:bold; margin-top:10px; }
+        .buy-btn:hover { background:#e68900; }
+        .load { text-align:center; padding:80px 20px; }
+        .spinner { border:10px solid #f3f3f3; border-top:10px solid var(--s); border-radius:50%; width:70px; height:70px; animation:spin 1s linear infinite; margin:0 auto 20px; }
+        @keyframes spin { 0% { transform:rotate(0deg); } 100% { transform:rotate(360deg); } }
+        .disc { text-align:center; font-size:0.85em; color:#666; margin:60px 0 20px; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>FishingTackle.ai</h1>
+    <p>Get exact gear that’s working right now — with real Amazon links, prices & photos</p>
+</header>
+<main>
+<form id="f">
+    <label for="loc">Location</label><input type="text" id="loc" placeholder="e.g. Destin FL, New Jersey" required>
+    <label for="date">Date (optional)</label><input type="date" id="date">
+    <label for="species">Target Species (optional)</label><input type="text" id="species" placeholder="e.g. Striped Bass">
+    <label for="body">Body of Water</label>
+    <select id="body" required><option value="">Choose...</option><option>Ocean / Saltwater</option><option>Inshore / Bay / Estuary</option><option>Freshwater Lake</option><option>River / Stream</option><option>Coastal Beach / Surf</option></select>
+    <label for="type">Fishing Technique</label>
+    <select id="type" required><option value="">Choose...</option><option>Spinning / Casting</option><option>Baitcasting</option><option>Fly Fishing</option><option>Trolling</option><option>Bottom Fishing / Jigging</option><option>Ice Fishing</option><option>Kayak Fishing</option><option>Wade Fishing</option><option>Deep Sea / Offshore</option></select>
+    <button type="submit" id="submitBtn">Get My Tackle List →</button>
+</form>
+<div id="out">
+    <div class="load" id="load">
+        <div class="spinner"></div>
+        <p style="font-size:1.6em;">Talking to the fish gods… 🎣</p>
+    </div>
+    <div id="results" style="display:none;">
+        <h2 style="text-align:center;">Your Personalized Tackle Recommendations</h2>
+        <div class="tiers">
+            <div class="tier budget"><h3>Budget Picks</h3><div id="budget"></div></div>
+            <div class="tier mid"><h3>Mid-Range</h3><div id="mid"></div></div>
+            <div class="tier pro"><h3>Pro / Premium</h3><div id="pro"></div></div>
+        </div>
+        <div style="margin-top:60px;">
+            <h2 style="text-align:center;">Pro Tips & What’s Biting</h2>
+            <ul id="tips" style="list-style:none; padding:0;"></ul>
+        </div>
+    </div>
+</div>
+<p class="disc">Disclosure: We earn commission on purchases (keeps the site free & fast).</p>
+</main>
 <script>
     const form = document.getElementById('f');
     const out = document.getElementById('out');
@@ -6,7 +86,6 @@
     const submitBtn = document.getElementById('submitBtn');
     const tiers = { budget: document.getElementById('budget'), mid: document.getElementById('mid'), pro: document.getElementById('pro') };
     const tipsList = document.getElementById('tips');
-
     form.addEventListener('submit', async e => {
         e.preventDefault();
         out.style.display = 'block';
@@ -16,14 +95,12 @@
         submitBtn.textContent = 'Working…';
         for (const tier in tiers) tiers[tier].innerHTML = '';
         tipsList.innerHTML = '';
-
         const loc = document.getElementById('loc').value.trim();
         const date = document.getElementById('date').value || 'current season';
         const species = document.getElementById('species').value.trim();
         const body = document.getElementById('body').value;
         const type = document.getElementById('type').value;
         const speciesPart = species ? `Target species: ${species}\n` : '';
-
         const prompt = `You are the #1 fishing tackle expert. Return real Amazon products with ASINs only.
 ${speciesPart}Location: ${loc}
 Date/Season: ${date}
@@ -42,19 +119,19 @@ PRO:
 TIPS:
 1. ...
 ...`;
-
         try {
             const res = await fetch('/api/recommend', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ prompt })
             });
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-            const data = await res.json();
-
-            // ←←← THIS IS THE FIX — handles every possible backend format
+            if (!res.ok) throw new Error(`Backend error: HTTP ${res.status}`);
+            let data;
+            try {
+                data = await res.json();
+            } catch {
+                data = await res.text(); // Fallback to plain text if not JSON
+            }
             let text = '';
             if (typeof data === 'string') text = data;
             else if (data.choices?.[0]?.message?.content) text = data.choices[0].message.content;
@@ -62,43 +139,37 @@ TIPS:
             else if (data.text) text = data.text;
             else if (data.content) text = data.content;
             else if (data.result) text = data.result;
-            else throw new Error('Unexpected response format');
-
-            if (!text.includes('BUDGET:')) throw new Error('AI did not follow format');
-
-            // Extract all ASINs safely
+            else throw new Error('Unexpected response format from backend');
+            if (!text.includes('BUDGET:')) throw new Error('AI output did not follow expected format');
             const asinRegex = /ASIN:\s*([A-Z0-9]{10})/gi;
             const asins = [...text.matchAll(asinRegex)].map(m => m[1]).slice(0, 30);
-
             let products = [];
             if (asins.length > 0) {
-                const prodRes = await fetch('/api/amazon-products', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ asins })
-                });
-                products = await prodRes.json();
+                try {
+                    const prodRes = await fetch('/api/amazon-products', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ asins })
+                    });
+                    products = await prodRes.json();
+                } catch (prodErr) {
+                    console.warn('PAAPI fetch failed, falling back to basic display:', prodErr);
+                }
             }
             const productMap = {};
             products.forEach(p => productMap[p.ASIN] = p);
-
-            // Parse sections
-            const sectionRegex = /\n(BUDGET|MID-RANGE|PRO|TIPS):/g;
-            const parts = text.split(sectionRegex);
-            for (let i = 1; i < parts.length; i += 2) {
-                const tierName = parts[i].trim();
-                const content = parts[i + 1] || '';
-
-                const targetDiv = tierName === 'TIPS' ? tipsList : tiers[tierName.toLowerCase().includes('budget') ? 'budget' : tierName.toLowerCase().includes('mid') ? 'mid' : 'pro'];
-
+            const sections = text.split(/\n(BUDGET|MID-RANGE|PRO|TIPS):/g);
+            for (let i = 1; i < sections.length; i += 2) {
+                const tierName = sections[i].trim();
+                const content = sections[i + 1] || '';
+                const targetDiv = tierName === 'TIPS' ? tipsList : tiers[tierName.toLowerCase().split('-')[0]];
                 content.split('\n')
                     .filter(line => /^\d+\./.test(line.trim()))
                     .forEach(line => {
                         const cleanLine = line.trim();
                         const asinMatch = cleanLine.match(/ASIN:\s*([A-Z0-9]{10})/i);
                         const asin = asinMatch ? asinMatch[1] : null;
-                        const title = cleanLine.split('→')[1]?.replace(/\s*\(ASIN:.*\)/i, '').trim() || 'Unknown Product';
-
+                        const title = cleanLine.split('→')[1]?.replace(/\s*\(ASIN:.*\)/i, '').trim() || cleanLine;
                         if (tierName === 'TIPS') {
                             const li = document.createElement('li');
                             li.style.cssText = 'background:white;padding:16px;margin:12px 0;border-radius:10px;';
@@ -106,9 +177,7 @@ TIPS:
                             targetDiv.appendChild(li);
                             return;
                         }
-
                         const product = asin ? productMap[asin] : null;
-
                         const card = document.createElement('div');
                         card.className = 'product-card';
                         card.innerHTML = `
@@ -122,17 +191,17 @@ TIPS:
                         targetDiv.appendChild(card);
                     });
             }
-
             load.style.display = 'none';
             results.style.display = 'block';
-            results.scrollIntoView({ behavior: 'smooth' });
-
+            out.scrollIntoView({ behavior: 'smooth' });
         } catch (err) {
-            console.error(err);
-            load.innerHTML = `<p style="color:#e74c3c;font-size:1.5em;">Error: ${err.message}<br><br>Check browser console (F12) for details.</p>`;
+            console.error('Full error details:', err);
+            load.innerHTML = `<p style="color:#e74c3c;font-size:1.5em;">Error: ${err.message || 'Unknown'}<br><br>Check console (F12) for more. Likely backend issue — share the /api/recommend response.</p>`;
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Get My Tackle List →';
         }
     });
 </script>
+</body>
+</html>
