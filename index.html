@@ -24,7 +24,7 @@
         const type = document.getElementById('type').value;
         const speciesPart = species ? `Target species: ${species}\n` : '';
 
-        const prompt = `You are the #1 professional angler and tackle expert who can recommend the best gear for the appropriate request. Return ONLY valid Amazon products with real ASINs.
+        const prompt = `You are the #1 fishing tackle expert. Return real Amazon products with ASINs only.
 ${speciesPart}Location: ${loc}
 Date/Season: ${date}
 Water: ${body}
@@ -136,5 +136,3 @@ TIPS:
         }
     });
 </script>
-</body>
-</html>
