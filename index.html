@@ -146,9 +146,7 @@
     const locError = document.getElementById('loc-error');
     const bodyError = document.getElementById('body-error');
     const typeError = document.getElementById('type-error');
-
     let abortController = null;
-
     // Validate form
     function validateForm() {
         let valid = true;
@@ -172,14 +170,12 @@
         }
         return valid;
     }
-
     // Parse section with regex for robustness
     function parseSection(text, sectionName) {
         const regex = new RegExp(`${sectionName}:(.*?)(\\n(?:BUDGET|MID-RANGE|PRO|TIPS):|$)`, 's');
         const match = text.match(regex);
         return match ? match[1].trim().split('\n').filter(line => line.match(/^\d+\./)) : [];
     }
-
     // Create item element
     function createItem(line) {
         const model = line.split('→')[1]?.trim() || line.replace(/^\d+\.\s*/, '');
@@ -191,35 +187,39 @@
         links.className = 'links';
         // Amazon affiliate
         links.innerHTML += `<a href="https://amazon.com/s?k=${encodeURIComponent(model)}&tag=fishingtac0b6-20" target="_blank" rel="noopener" onclick="trackClick('amazon', '${model}')">Buy on Amazon →</a>`;
-        // Added Bass Pro for diversity/profit
-        links.innerHTML += `<a href="https://basspro.com/search/?searchTerm=${encodeURIComponent(model)}" target="_blank" rel="noopener" onclick="trackClick('basspro', '${model}')">Buy on Bass Pro →</a>`;
         item.appendChild(links);
         return item;
     }
-
     // Track clicks for analytics (stub - integrate with GA or similar)
     function trackClick(affiliate, model) {
         console.log(`Click tracked: ${affiliate} - ${model}`);
         // Add real tracking here, e.g., gtag('event', 'click', { 'affiliate': affiliate, 'model': model });
     }
-
-    // Handle signup (stub - send to backend)
-    document.getElementById('signup-form')?.addEventListener('submit', e => {
+    // Handle signup (send to backend)
+    document.getElementById('signup-form')?.addEventListener('submit', async e => {
         e.preventDefault();
         const email = document.getElementById('email').value;
-        console.log(`Subscribe: ${email}`);
-        // Fetch to /api/subscribe, etc.
-        alert('Subscribed! 🎣');
+        try {
+            const response = await fetch('/api/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            if (response.ok) {
+                alert('Subscribed! You'll receive weekly fishing tips and deals. 🎣');
+            } else {
+                alert('Subscription failed. Please try again.');
+            }
+        } catch (error) {
+            alert('Error: ' + error.message);
+        }
     });
-
     form.addEventListener('submit', async e => {
         e.preventDefault();
         if (!validateForm()) return;
-
         // Abort previous request if any
         if (abortController) abortController.abort();
         abortController = new AbortController();
-
         // Show loading
         out.style.display = 'block';
         load.style.display = 'block';
@@ -227,22 +227,20 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'Working…';
         budgetDiv.innerHTML = midDiv.innerHTML = proDiv.innerHTML = tipsList.innerHTML = '';
-
         // Sanitize inputs
         const loc = locInput.value.trim().replace(/[<>&]/g, '');
         const date = document.getElementById('date').value || 'current season';
         const species = document.getElementById('species').value.trim().replace(/[<>&]/g, '');
         const body = bodySelect.value;
         const type = typeSelect.value;
-
         const speciesPart = species ? `Target species: ${species}\n` : '';
         // Improved prompt: More detailed for better AI output, emphasize profitability (high-conversion products)
-        const prompt = `You are the #1 fishing tackle expert with up-to-date knowledge on best-sellers.
+        const prompt = `You are the #1 fishing tackle expert with up-to-date knowledge on best-sellers. Base all recommendations on real, proven fishing practices and knowledge. Do not hallucinate or invent gear combinations that don't make sense. Consider the typical weather for the location and date/season when recommending clothing (e.g., warm layers, waterproof gear for cold or rainy conditions; avoid shorts in winter). Match lures and baits precisely to the fishing technique, water type, and species (e.g., for trolling, use deep-diving plugs, crankbaits, or umbrella rigs, not topwater lures; for striped bass in cold months, focus on deeper presentations).
 ${speciesPart}Location: ${loc}
 Date/Season: ${date}
 Water: ${body}
 Style: ${type}
-Recommend only real, 4.5+ star best-sellers available on Amazon/Bass Pro. Vary brands. Focus on high-conversion items.
+Recommend only real, 4.5+ star best-sellers available on Amazon. Vary brands. Focus on high-conversion items.
 Return EXACTLY this format — no extra text:
 BUDGET:
 1. Rod → [brand model]
@@ -282,7 +280,6 @@ TIPS:
 5. [tip]
 6. [tip]
 (4–6 tips: techniques, spots, timing, what's biting – NO gear)`;
-
         try {
             const response = await fetch('/api/recommend', {
                 method: 'POST',
@@ -293,20 +290,16 @@ TIPS:
             if (!response.ok) throw new Error('API error');
             const data = await response.json();
             const text = data.choices[0].message.content;
-
             // Parse tiers using fragments for efficiency
             const budgetFrag = document.createDocumentFragment();
             parseSection(text, 'BUDGET').forEach(line => budgetFrag.appendChild(createItem(line)));
             budgetDiv.appendChild(budgetFrag);
-
             const midFrag = document.createDocumentFragment();
             parseSection(text, 'MID-RANGE').forEach(line => midFrag.appendChild(createItem(line)));
             midDiv.appendChild(midFrag);
-
             const proFrag = document.createDocumentFragment();
             parseSection(text, 'PRO').forEach(line => proFrag.appendChild(createItem(line)));
             proDiv.appendChild(proFrag);
-
             // Parse tips as list items
             const tipsFrag = document.createDocumentFragment();
             parseSection(text, 'TIPS').forEach(line => {
@@ -316,7 +309,6 @@ TIPS:
                 tipsFrag.appendChild(li);
             });
             tipsList.appendChild(tipsFrag);
-
             load.style.display = 'none';
             tiersSec.style.display = 'block';
             tipsSec.style.display = 'block';
