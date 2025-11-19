@@ -195,24 +195,13 @@
         console.log(`Click tracked: ${affiliate} - ${model}`);
         // Add real tracking here, e.g., gtag('event', 'click', { 'affiliate': affiliate, 'model': model });
     }
-    // Handle signup (send to backend)
-    document.getElementById('signup-form')?.addEventListener('submit', async e => {
+    // Handle signup (stub - send to backend)
+    document.getElementById('signup-form')?.addEventListener('submit', e => {
         e.preventDefault();
         const email = document.getElementById('email').value;
-        try {
-            const response = await fetch('/api/subscribe', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email })
-            });
-            if (response.ok) {
-                alert('Subscribed! You'll receive weekly fishing tips and deals. 🎣');
-            } else {
-                alert('Subscription failed. Please try again.');
-            }
-        } catch (error) {
-            alert('Error: ' + error.message);
-        }
+        console.log(`Subscribe: ${email}`);
+        // Fetch to /api/subscribe, etc.
+        alert('Subscribed! 🎣');
     });
     form.addEventListener('submit', async e => {
         e.preventDefault();
